@@ -1,0 +1,120 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+  // output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+model User{
+  id Int @id @default(autoincrement())
+  email String @unique
+  password String
+  fullName String?
+  phoneNumber String?
+  address String?
+  country String @default("nepal")
+  otp String?
+  isPackage Boolean @default(false)
+  isActive Boolean @default(false)
+  role String @default("farmer")
+
+  createdAt DateTime @default(now())
+  otpExpiresAt DateTime?
+  crops Crop[]
+  cattles Cattle[]
+
+
+}
+model Crop {
+  id Int @id @default(autoincrement())
+  name String 
+  description String
+  image String?
+  plantDate String
+  harvestDate DateTime?
+  quantity Int?
+  cropType CropType
+  unit String
+
+  createdAt DateTime @default(now())
+  updateAt DateTime @updatedAt
+  userId Int
+  user User @relation(fields: [userId],references: [id],onDelete: Cascade)
+
+
+}
+enum CropType {
+  WHEAT
+  RICE
+  FLOUR
+  CORN
+  VEGETABLE
+  FRUIT
+  PULSES
+  COTTON
+  OTHER
+}
+
+model Cattle{
+  id Int @id @default(autoincrement())
+  name String?
+  tagNumber String
+  breed String
+  gender Gender
+  cattleType CattleType
+  dateOfBirth DateTime
+  ageInMonths Int?
+  weight Float?
+  stage CattleStage
+healthStatus    HealthStatus  @default(HEALTHY)
+  image           String?      
+  description     String?
+
+  userId Int
+  user User  @relation(fields: [userId],references: [id],onDelete: Cascade)
+  @@unique([userId,tagNumber])
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  }
+  enum Gender {
+  MALE
+  FEMALE
+}
+
+enum CattleType {
+  COW
+  BUFFALO
+  BULL
+  OX
+  CALF
+  GOAT
+  HEN
+  OTHER
+}
+
+enum CattleStage {
+  CALF
+  HEIFER
+  LACTATING
+  DRY
+  PREGNANT
+  BREEDING
+  EGG
+}
+
+enum HealthStatus {
+  HEALTHY
+  SICK
+  UNDER_TREATMENT
+  QUARANTINED
+  SOLD
+  DECEASED
+}
